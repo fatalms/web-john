@@ -1,0 +1,30 @@
+.footer {
+    text-align: center;
+    // .footer__container
+    &__container {
+    }
+    // .footer__icons
+    &__icons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    // .footer__icon
+    &__icon {
+        color: #21243d;
+        font-size: 30px;
+        margin: 0px 17px 30px 17px;
+        cursor: pointer;
+
+        &:hover {
+            color: #ff6464;
+        }
+    }
+    // .footer__copyright
+    &__copyright {
+        font-size: 14px;
+        line-height: 21px;
+        line-height: math.div(21, 14) * 100%;
+        color: #21243d;
+    }
+}
