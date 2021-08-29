@@ -1,5 +1,4 @@
-//let replace = require('gulp-replace'); //.pipe(replace('bar', 'foo'))
-const { src, dest } = require("gulp");
+const {src, dest} = require("gulp");
 const gulp = require("gulp");
 const autoprefixer = require("gulp-autoprefixer"),
     babel = require("gulp-babel"),
@@ -26,8 +25,8 @@ const autoprefixer = require("gulp-autoprefixer"),
     webpcss = require("gulp-webpcss"),
     webphtml = require("gulp-webp-html");
 
-const project_name = path.basename(__dirname);
-const src_folder = "#src";
+const project_name = "dist";
+const src_folder = "src";
 
 let pathes = {
     build: {
@@ -41,7 +40,7 @@ let pathes = {
     src: {
         favicon: src_folder + "/img/favicon.{jpg,png,svg,gif,ico,webp}",
         html: [src_folder + "/**/*.html", "!" + src_folder + "/_*.html"],
-        js: [src_folder + "/js/app.js", src_folder + "/js/vendors.js"],
+        js: [src_folder + "/js/index.js"],
         css: src_folder + "/scss/style.scss",
         images: [src_folder + "/img/**/*.{jpg,jpeg,png,svg,gif,ico,webp}", "!**/favicon.*"],
         fonts: src_folder + "/fonts/*.ttf",
@@ -73,7 +72,7 @@ function copyFolders() {
 
 function browserSync(done) {
     browsersync.init({
-        server: { baseDir: project_name },
+        server: {baseDir: project_name},
         notify: false,
         port: 3000,
     });
@@ -81,7 +80,7 @@ function browserSync(done) {
 
 function html() {
     return src(pathes.src.html, {})
-        .pipe(fileinclude({ prefix: "<!--=", suffix: "-->" }))
+        .pipe(fileinclude({prefix: "<!--=", suffix: "-->"}))
         .on("error", (err) => console.error("Error!", err.message))
         .pipe(dest(pathes.build.html))
         .pipe(browsersync.stream());
@@ -89,8 +88,8 @@ function html() {
 
 function css() {
     return src(pathes.src.css, {})
-        .pipe(scss({ outputStyle: "expanded" }).on("error", scss.logError))
-        .pipe(rename({ extname: ".min.css" }))
+        .pipe(scss({outputStyle: "expanded"}).on("error", scss.logError))
+        .pipe(rename({extname: ".min.css"}))
         .pipe(dest(pathes.build.css))
         .pipe(browsersync.stream());
 }
@@ -105,7 +104,7 @@ function js() {
             // .pipe(fileinclude())
             .pipe(include())
             .on("error", (err) => console.error("Error!", err.message))
-            .pipe(rename({ suffix: ".min", extname: ".js" }))
+            .pipe(rename({suffix: ".min", extname: ".js"}))
             .pipe(dest(pathes.build.js))
             .pipe(browsersync.stream())
     );
@@ -118,14 +117,14 @@ function images() {
 function favicon() {
     return src(pathes.src.favicon)
         .pipe(plumber())
-        .pipe(rename({ extname: ".ico" }))
+        .pipe(rename({extname: ".ico"}))
         .pipe(dest(pathes.build.html));
 }
 
 function fonts_otf() {
     return src("./" + src_folder + "/fonts/*.otf")
         .pipe(plumber())
-        .pipe(fonter({ formats: ["ttf"] }))
+        .pipe(fonter({formats: ["ttf"]}))
         .pipe(dest("./" + src_folder + "/fonts/"));
 }
 
@@ -176,13 +175,13 @@ function watchFiles() {
 function cssBuild() {
     return src(pathes.src.css, {})
         .pipe(plumber())
-        .pipe(scss({ outputStyle: "expanded" }).on("error", scss.logError))
+        .pipe(scss({outputStyle: "expanded"}).on("error", scss.logError))
         .pipe(group_media())
-        .pipe(autoprefixer({ grid: true, overrideBrowserslist: ["last 5 versions"], cascade: true }))
-        .pipe(webpcss({ webpClass: "._webp", noWebpClass: "._no-webp" }))
+        .pipe(autoprefixer({grid: true, overrideBrowserslist: ["last 5 versions"], cascade: true}))
+        .pipe(webpcss({webpClass: "._webp", noWebpClass: "._no-webp"}))
         .pipe(dest(pathes.build.css))
         .pipe(clean_css())
-        .pipe(rename({ extname: ".min.css" }))
+        .pipe(rename({extname: ".min.css"}))
         .pipe(dest(pathes.build.css))
         .pipe(browsersync.stream());
 }
@@ -196,13 +195,13 @@ function jsBuild() {
         .pipe(plumber())
         .pipe(include())
         .pipe(dest(pathes.build.js))
-        .pipe(babel({ presets: ["@babel/env"] }))
+        .pipe(babel({presets: ["@babel/env"]}))
         .pipe(uglify(/* options */))
         .on("error", (err) => {
             console.log(err.toString());
             this.emit("end");
         })
-        .pipe(rename({ extname: ".min.js" }))
+        .pipe(rename({extname: ".min.js"}))
         .pipe(dest(pathes.build.js))
         .pipe(browsersync.stream());
 }
@@ -211,15 +210,15 @@ function imagesBuild() {
     return (
         src(pathes.src.images)
             //.pipe(newer(pathes.build.images))
-            .pipe(imagemin([webp({ quality: 85 })]))
-            .pipe(rename({ extname: ".webp" }))
+            .pipe(imagemin([webp({quality: 85})]))
+            .pipe(rename({extname: ".webp"}))
             .pipe(dest(pathes.build.images))
             .pipe(src(pathes.src.images))
             //.pipe(newer(pathes.build.images))
             .pipe(
                 imagemin({
                     progressive: true,
-                    svgoPlugins: [{ removeViewBox: false }],
+                    svgoPlugins: [{removeViewBox: false}],
                     interlaced: true,
                     optimizationLevel: 3, // 0 to 7
                 })
@@ -231,7 +230,7 @@ function imagesBuild() {
 function htmlBuild() {
     return src(pathes.src.html, {})
         .pipe(plumber())
-        .pipe(fileinclude({ prefix: "<!--=", suffix: "-->" }))
+        .pipe(fileinclude({prefix: "<!--=", suffix: "-->"}))
         .pipe(webphtml())
         .pipe(
             version({
@@ -265,7 +264,7 @@ function htmlBuild() {
 let fontsBuild = gulp.series(fonts_otf, fonts, fontstyle);
 let buildDev = gulp.series(clean, gulp.parallel(fontsBuild, copyFolders, json, html, css, js, favicon, images));
 let watchDev = gulp.series(buildDev, gulp.parallel(watchFiles, browserSync));
-let build = gulp.series(clean, gulp.parallel(fontsBuild, htmlBuild, cssBuild, jsBuild, imagesBuild));
+let build = gulp.series(clean, gulp.parallel(htmlBuild, cssBuild, jsBuild, imagesBuild));
 
 exports.copy = copyFolders;
 exports.fonts = fontsBuild;
