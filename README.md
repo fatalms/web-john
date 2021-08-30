@@ -1,6 +1,6 @@
-## Вёрстка макета "Charger"
+## Вёрстка макета "John"
 
-[Ссылка на макет](https://cloud.mail.ru/public/FZMw/GhXkhN2oL)
+[Ссылка на макет](https://www.figma.com/file/7HYMYyR4mNHsCtZhFHANki/John)
 
 ## Работа с Gulp
 

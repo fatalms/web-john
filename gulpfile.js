@@ -56,8 +56,6 @@ let pathes = {
     clean: "./" + project_name + "/",
 };
 
-console.log(pathes);
-
 // Пишем папки которые нужно копировать через запятую
 let foldersArray = ["videos"]; // 'videos', 'files' ...
 function copyFolders() {
